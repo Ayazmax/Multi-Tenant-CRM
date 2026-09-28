@@ -17,7 +17,7 @@ export function useCompany(id: number) {
   return useQuery({
     queryKey: queryKeys.companies.detail(id),
     queryFn: () => companiesApi.get(id),
-    enabled: Number.isFinite(id),
+    enabled: Number.isInteger(id) && id > 0,
   })
 }
 

@@ -40,6 +40,11 @@ class OrganizationMemberSerializer(serializers.ModelSerializer):
 class LoginSerializer(TokenObtainPairSerializer):
     """Issues JWTs carrying tenant/role claims and returns the user profile."""
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Passwords may legitimately start or end with spaces.
+        self.fields["password"].trim_whitespace = False
+
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)

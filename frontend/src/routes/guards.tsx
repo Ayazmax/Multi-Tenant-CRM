@@ -19,7 +19,11 @@ export function ProtectedRoute() {
 
 export function PublicOnlyRoute() {
   const isAuthenticated = useAuthStore(selectIsAuthenticated)
-  return isAuthenticated ? <Navigate to="/" replace /> : <Outlet />
+  const location = useLocation()
+  // Signing in flips this guard before the login page's own navigate runs,
+  // so the originally requested page has to be honoured here.
+  const from = (location.state as { from?: string } | null)?.from ?? '/'
+  return isAuthenticated ? <Navigate to={from} replace /> : <Outlet />
 }
 
 export function PermissionRoute({ permission, children }: { permission: Permission; children: ReactNode }) {

@@ -37,6 +37,15 @@ def test_login_with_wrong_password_uses_error_envelope(admin_a):
     assert response.json()["message"]
 
 
+def test_password_whitespace_is_significant(admin_a):
+    assert login(admin_a.email, f"{PASSWORD} ").status_code == 401
+
+    admin_a.set_password(" spaced password ")
+    admin_a.save()
+    assert login(admin_a.email, " spaced password ").status_code == 200
+    assert login(admin_a.email, "spaced password").status_code == 401
+
+
 def test_user_without_organization_cannot_log_in(db):
     User.objects.create_superuser(email="root@example.com", password=PASSWORD)
     assert login("root@example.com").status_code == 401

@@ -39,16 +39,19 @@ export function CompanyDetailPage() {
     </Link>
   )
 
+  const isValidId = Number.isInteger(companyId) && companyId > 0
+
   if (isLoading) return <LoadingState label="Loading company…" />
-  if (error || !company) {
+  if (!isValidId || error || !company) {
     const apiError = toApiError(error)
+    const notFound = !isValidId || apiError.status === 404
     return (
       <>
         {backLink}
         <ErrorState
-          title={apiError.status === 404 ? 'Company not found' : 'Could not load company'}
-          message={apiError.status === 404 ? 'It may have been deleted or belongs to another organization.' : apiError.message}
-          onRetry={apiError.status === 404 ? undefined : () => refetch()}
+          title={notFound ? 'Company not found' : 'Could not load company'}
+          message={notFound ? 'It may have been deleted or belongs to another organization.' : apiError.message}
+          onRetry={notFound ? undefined : () => refetch()}
         />
       </>
     )
