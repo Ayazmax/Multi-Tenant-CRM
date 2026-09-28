@@ -115,6 +115,36 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 MAX_IMAGE_UPLOAD_SIZE = env.int("MAX_IMAGE_UPLOAD_SIZE", default=2 * 1024 * 1024)
 
+STORAGES = {
+    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
+}
+
+# Uploaded media on AWS S3. The bucket stays private (Block Public Access on)
+# and clients receive short-lived presigned GET URLs. When the access keys are
+# left empty, boto3 falls back to its default credential chain (e.g. an IAM
+# role attached to the server), which is preferred in production.
+USE_S3 = env.bool("USE_S3", default=False)
+
+if USE_S3:
+    STORAGES["default"] = {
+        "BACKEND": "storages.backends.s3.S3Storage",
+        "OPTIONS": {
+            "bucket_name": env("AWS_STORAGE_BUCKET_NAME"),
+            "region_name": env("AWS_S3_REGION_NAME", default="ap-south-1"),
+            "access_key": env("AWS_ACCESS_KEY_ID", default=None) or None,
+            "secret_key": env("AWS_SECRET_ACCESS_KEY", default=None) or None,
+            "location": env("AWS_S3_MEDIA_PREFIX", default="media"),
+            "default_acl": None,
+            "querystring_auth": True,
+            "querystring_expire": env.int("AWS_QUERYSTRING_EXPIRE", default=3600),
+            "file_overwrite": False,
+            "signature_version": "s3v4",
+            "addressing_style": "virtual",
+            "object_parameters": {"CacheControl": "private, max-age=3600"},
+        },
+    }
+
 # Django REST Framework --------------------------------------------------------
 
 REST_FRAMEWORK = {
