@@ -8,7 +8,7 @@ Multiple organizations operate independently within the same system. Every user 
 
 | Layer    | Technology                                              |
 |----------|---------------------------------------------------------|
-| Backend  | Django 5, Django REST Framework, SimpleJWT, django-filter |
+| Backend  | Django 6, Django REST Framework, SimpleJWT, django-filter |
 | Database | PostgreSQL                                              |
 | Storage  | AWS S3 (private bucket, presigned URLs)                 |
 | Frontend | React, TypeScript, Vite, React Router, Zustand, TanStack Query |
