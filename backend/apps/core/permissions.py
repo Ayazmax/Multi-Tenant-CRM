@@ -37,6 +37,9 @@ class RoleBasedPermission(BasePermission):
 
     def has_permission(self, request, view):
         action = getattr(view, "action", None)
+        if action is None and hasattr(view, "action_map"):
+            # Method not routed on this viewset; DRF will answer 405.
+            return True
         if action is None:
             action = request.method.lower()
         matrix = getattr(view, "role_permissions", DEFAULT_ROLE_PERMISSIONS)

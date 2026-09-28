@@ -10,6 +10,7 @@ from rest_framework_simplejwt.views import TokenBlacklistView, TokenObtainPairVi
 
 from apps.activity.models import ActivityLog
 from apps.activity.serializers import ActivityLogSerializer
+from apps.core.authentication import TenantJWTAuthentication
 from apps.core.constants import EDITOR_ROLES
 from apps.core.permissions import IsOrganizationMember, RoleBasedPermission
 from apps.core.responses import success_response
@@ -37,6 +38,7 @@ class RefreshView(TokenRefreshView):
 class LogoutView(TokenBlacklistView):
     """Blacklists the supplied refresh token."""
 
+    authentication_classes = [TenantJWTAuthentication]
     permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
