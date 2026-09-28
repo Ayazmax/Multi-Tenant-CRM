@@ -26,6 +26,10 @@ backend/staticfiles/
 node_modules/
 frontend/dist/
 frontend/coverage/
+frontend/test-results/
+frontend/playwright-report/
+frontend/blob-report/
+frontend/e2e/.auth/
 *.tsbuildinfo
 
 # Editors / OS

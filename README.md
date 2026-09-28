@@ -12,7 +12,7 @@ Multiple organizations operate independently within the same system. Every user 
 | Database | PostgreSQL                                                                  |
 | Storage  | AWS S3 (private bucket, presigned URLs), local disk fallback for development |
 | Frontend | React 19, TypeScript, Vite, Tailwind CSS, React Router, Zustand, TanStack Query, Axios |
-| Tests    | pytest, pytest-django (81 tests)                                            |
+| Tests    | pytest + pytest-django (82 API tests), Playwright (116 end-to-end tests)    |
 
 ## Repository structure
 
@@ -25,6 +25,7 @@ backend/
   apps/crm/          Company & Contact: models, serializers, services, filters, views
   apps/activity/     immutable ActivityLog, audit service, read-only API
   tests/             tenant isolation, RBAC, validation, soft delete, audit log
+  scripts/           e2e_server.py: isolated, freshly seeded backend for Playwright
   requirements/      base.txt, dev.txt, prod.txt
 frontend/
   src/api/           centralized Axios client (token refresh, error normalization) + endpoint modules
@@ -33,6 +34,7 @@ frontend/
   src/components/    reusable UI (DataTable, Pagination, Modal, ConfirmDialog, forms, badges, states)
   src/pages/         Login, Dashboard, Companies, Company detail (+ contacts), Activity log
   src/routes/        ProtectedRoute, PublicOnlyRoute, PermissionRoute
+  e2e/               Playwright end-to-end tests
 docs/aws/            IAM and bucket policies for S3
 ```
 
@@ -179,6 +181,26 @@ npm run lint
 npm run build          # type-checks and builds
 ```
 
+### End-to-end tests (Playwright)
+
+116 browser tests drive the real React app against the real Django API. They focus on validation and on common human mistakes:
+
+- **Login:** malformed emails, wrong or wrongly-cased passwords, stray spaces, double-clicking Sign in, deep links after login, sign out plus the back button, silent token refresh, and expired sessions.
+- **Companies:** blank or space-only names, duplicates with different case, the same name in another organization, rejected logos (PDF, SVG, over 2 MB, a text file renamed to `.png`), HTML/XSS in names, unicode names, double-submit, cancel/Escape/backdrop discarding edits, delete confirmation, reusing a deleted name, search wildcards and SQL-looking input, filters, sorting, pagination, and hand-typed or foreign IDs in the URL.
+- **Contacts:** required fields, invalid emails, phones with letters, spaces, dashes, `+` or the wrong length, boundary lengths and leading zeros, email lowercasing, duplicates within a company, reusing a deleted contact's email, and API calls that bypass the form.
+- **Roles and tenancy:** hidden controls and direct API calls for each role, "Access restricted" pages, immutable audit logs, and cross-organization URLs and API requests.
+- **Activity log and dashboard:** entries for every action, no entry for a no-op save, filters, per-organization numbers, and mobile navigation.
+
+The suite starts its **own** backend on port 8899 with a separate database (`<your db>_e2e`, created automatically and re-seeded on every run) and its own Vite server on port 5174, so it never touches your development data or running servers. PostgreSQL must be running, and the database user needs `CREATEDB`.
+
+```bash
+cd frontend
+npx playwright install chromium   # first time only
+npm run test:e2e                  # headless run
+npm run test:e2e:ui               # interactive runner
+npm run test:e2e:report           # open the last HTML report
+```
+
 ## Configuration
 
 All configuration comes from environment variables. See [`backend/.env.example`](backend/.env.example) and [`frontend/.env.example`](frontend/.env.example). Real `.env` files are git-ignored.
@@ -249,7 +271,7 @@ Query parameters: `action`, `model_name`, `object_id`, `user`, `date_from`, `dat
 
 - **Centralized API layer.** One Axios instance attaches the access token, unwraps the response envelope, and converts every failure into a typed `ApiError` with field errors. On a `401`, it runs a single shared refresh request (concurrent requests wait for it), retries the original request, and signs the user out if the refresh fails.
 - **State management.** Zustand holds the auth session. TanStack Query holds server state, with cache invalidation after mutations, so lists, detail pages and the dashboard stay in sync.
-- **Routing.** Protected routes redirect anonymous users to login. Role-restricted routes (Activity log) redirect users without permission. Search, filters, sort and page are stored in the URL query string, so views can be shared and survive a reload.
+- **Routing.** Protected routes redirect anonymous users to login. Role-restricted routes (Activity log) show an "Access restricted" page to users without permission. After signing in, users return to the page they originally requested. Changing search, filters or sorting resets the list to page 1.
 - **UX.** Skeleton and loading states, empty and error states with retry, toast notifications, confirmation before delete, client-side validation that matches the backend rules, and server field errors shown inline.
 
 ## Security notes & trade-offs
