@@ -86,14 +86,14 @@ Deadline: 24 hours from receipt.
 
 ---
 
-## Phase 0 — Setup (0.5 h)
+## Phase 0 — Setup 
 
 - [ ] Create GitHub repository, clone locally
 - [ ] Root `.gitignore` (Python, Node, `.env`, media, build output)
 - [ ] Create local PostgreSQL database and user
 - [ ] Commit: `chore: initial repository structure`
 
-## Phase 1 — Backend scaffold & configuration (1.5 h)
+## Phase 1 — Backend scaffold & configuration 
 
 - [ ] Virtualenv, `requirements/{base,dev,prod}.txt`
 - [ ] Django project `config`, split settings `base/dev/prod`
@@ -104,7 +104,7 @@ Deadline: 24 hours from receipt.
 - [ ] DRF defaults: JWT auth, `IsAuthenticated`, pagination, filter backends
 - [ ] Commit: `feat(backend): project scaffold with env-based dev/prod settings`
 
-## Phase 2 — Core tenant layer (2 h)
+## Phase 2 — Core tenant layer
 
 - [ ] `apps/core`: `TimeStampedModel`, `TenantModel`, `TenantQuerySet`/`TenantManager`
 - [ ] `TenantMiddleware` (request.organization)
@@ -112,7 +112,7 @@ Deadline: 24 hours from receipt.
 - [ ] Standard response renderer, custom exception handler, custom pagination class
 - [ ] Commit: `feat(core): tenant-aware base models, managers and middleware`
 
-## Phase 3 — Accounts & authentication (2 h)
+## Phase 3 — Accounts & authentication 
 
 - [ ] `Organization` (name, subscription_plan Basic/Pro, created_at)
 - [ ] Custom `User` (AbstractUser + organization FK + role Admin/Manager/Staff)
@@ -122,7 +122,7 @@ Deadline: 24 hours from receipt.
 - [ ] Django admin registration
 - [ ] Commit: `feat(accounts): organizations, role-based users and JWT auth`
 
-## Phase 4 — CRM: Companies & Contacts (3 h)
+## Phase 4 — CRM: Companies & Contacts 
 
 - [ ] `Company` model + serializer + service + viewset
 - [ ] `Contact` model + serializer (email/phone validation, per-company uniqueness) + service + viewset
@@ -131,14 +131,14 @@ Deadline: 24 hours from receipt.
 - [ ] Cross-tenant FK validation on Contact.company
 - [ ] Commit: `feat(crm): company and contact CRUD with search, filters, soft delete`
 
-## Phase 5 — Activity log (1 h)
+## Phase 5 — Activity log 
 
 - [ ] `ActivityLog` model (organization, user, action, model_name, object_id, changes, timestamp)
 - [ ] `ActivityLogService` wired into Company/Contact services
 - [ ] Read-only, org-scoped viewset with filters
 - [ ] Commit: `feat(activity): audit log for create/update/delete actions`
 
-## Phase 6 — File storage (S3) (1 h)
+## Phase 6 — File storage (S3) 
 
 - [ ] `django-storages` S3 backend, private ACL, presigned URLs
 - [ ] `USE_S3` toggle with local `FileSystemStorage` fallback for dev
@@ -146,7 +146,7 @@ Deadline: 24 hours from receipt.
 - [ ] Delete old logo on replace
 - [ ] Commit: `feat(storage): S3 logo uploads with presigned URLs`
 
-## Phase 7 — Tests & seed data (2 h)
+## Phase 7 — Tests & seed data 
 
 - [ ] `seed_demo` management command: 2 orgs × (Admin, Manager, Staff) + sample companies/contacts
 - [ ] Tests: tenant isolation (list/retrieve/update/delete across orgs → 404)
@@ -155,7 +155,7 @@ Deadline: 24 hours from receipt.
 - [ ] Tests: activity log created for each action; soft delete hides records
 - [ ] Commit: `test: tenant isolation, RBAC, validation and audit coverage`
 
-## Phase 8 — Frontend scaffold (2 h)
+## Phase 8 — Frontend scaffold 
 
 - [ ] Vite + React + TS, ESLint, path aliases, `frontend/.env.example` (`VITE_API_BASE_URL`)
 - [ ] Axios client: base URL, auth header, 401 → refresh → retry, normalized errors
@@ -164,7 +164,7 @@ Deadline: 24 hours from receipt.
 - [ ] Router + `ProtectedRoute` + app layout (sidebar/topbar)
 - [ ] Commit: `feat(frontend): scaffold with API client, auth store and protected routing`
 
-## Phase 9 — Reusable components (1 h)
+## Phase 9 — Reusable components 
 
 - [ ] `DataTable`, `Pagination`, `SearchInput`, `Select` filter
 - [ ] `Modal`, `ConfirmDialog`, `FormField`, `Button`
@@ -172,7 +172,7 @@ Deadline: 24 hours from receipt.
 - [ ] `RoleGate` (hide actions the role cannot perform)
 - [ ] Commit: `feat(frontend): reusable UI components`
 
-## Phase 10 — Pages (4 h)
+## Phase 10 — Pages 
 
 - [ ] Login page (validation, error display)
 - [ ] Dashboard (org name/plan, counts, recent activity)
