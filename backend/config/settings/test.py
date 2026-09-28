@@ -1,7 +1,7 @@
 import os
 import tempfile
 
-os.environ.setdefault("DJANGO_SECRET_KEY", "test-only-secret-key")
+os.environ.setdefault("DJANGO_SECRET_KEY", "test-only-secret-key-not-for-production-use-0123456789")
 os.environ.setdefault("USE_S3", "False")
 
 from .base import *  # noqa: E402,F401,F403
