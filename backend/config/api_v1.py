@@ -7,9 +7,12 @@ from rest_framework.routers import DefaultRouter
 
 from apps.activity.views import ActivityLogViewSet
 from apps.core.responses import success_response
+from apps.crm.views import CompanyViewSet, ContactViewSet
 
 router = DefaultRouter()
 router.include_root_view = False
+router.register("companies", CompanyViewSet, basename="company")
+router.register("contacts", ContactViewSet, basename="contact")
 router.register("activity-logs", ActivityLogViewSet, basename="activity-log")
 
 
